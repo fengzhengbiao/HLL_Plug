@@ -7,18 +7,27 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:onClick="onViewClicked"
-        android:id="@+id/btn_start"
-        android:layout_height="wrap_content"
-        android:text="开启服务" />
 
     <Button
+        android:id="@+id/btn_aces"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:onClick="onViewClicked"
+        android:text="开启无障碍服务" />
+
+
+    <Button
+        android:id="@+id/btn_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onViewClicked"
+        android:text="添加控制按钮" />
+
+    <Button
         android:id="@+id/btn_open"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="onViewClicked"
         android:text="打开货拉拉" />
 
 

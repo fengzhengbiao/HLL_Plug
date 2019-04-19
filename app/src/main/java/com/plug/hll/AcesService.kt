@@ -2,10 +2,11 @@ package com.plug.hll
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Path
-import android.media.AudioManager
 import android.os.Build
 import android.support.annotation.RequiresApi
 import android.util.Log
@@ -26,40 +27,50 @@ class AcesService : AccessibilityService() {
     }
 
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.i(TAG, "onStartCommand")
-        return super.onStartCommand(intent, flags, startId)
+    override fun onCreate() {
+        super.onCreate()
+        Log.i(TAG, "onCreate")
+        val filter = IntentFilter("ACTION_CHANGE_WORK")
+        registerReceiver(receiver, filter)
     }
 
+    val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            workForHLL = intent?.getBooleanExtra("WORK", false) ?: false
+        }
+    }
 
-    var catchVolum = false
+    override fun onDestroy() {
+        unregisterReceiver(receiver)
+        super.onDestroy()
+    }
+
+    var workForHLL = false
+
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
-        Log.i(TAG, "onAccessibilityEvent")
-        if (catchVolum.not()) {
-            catchVolum = true
-            volumeCatch()
-            Log.i(TAG, "catchVolum ")
+        if (event.packageName == HLL_PKG && workForHLL) {
+            Toast.makeText(this, "货拉拉新单来了", Toast.LENGTH_LONG).show()
         }
     }
 
 
-    private fun volumeCatch() {
-        val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        val result = audioManager.requestAudioFocus(audioListener, AudioManager.STREAM_NOTIFICATION,
-                AudioManager.AUDIOFOCUS_GAIN)
-        if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            Log.i(TAG, "获取音频焦点失败")
-        } else {
-            Log.i(TAG, "获取音频焦点成功")
-        }
-    }
-
-
-    private val audioListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
-        Log.i(TAG, "onAudioFocusChange:  $focusChange")
-        Toast.makeText(this, "货拉拉新单来了", Toast.LENGTH_LONG).show()
-    }
+//    private fun volumeCatch() {
+//        val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+//        val result = audioManager.requestAudioFocus(audioListener, AudioManager.STREAM_NOTIFICATION,
+//                AudioManager.AUDIOFOCUS_GAIN)
+//        if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+//            Log.i(TAG, "获取音频焦点失败")
+//        } else {
+//            Log.i(TAG, "获取音频焦点成功")
+//        }
+//    }
+//
+//
+//    private val audioListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
+//        Log.i(TAG, "onAudioFocusChange:  $focusChange")
+//        Toast.makeText(this, "货拉拉新单来了", Toast.LENGTH_LONG).show()
+//    }
 
     @RequiresApi(Build.VERSION_CODES.N)
     private fun swipe() {
