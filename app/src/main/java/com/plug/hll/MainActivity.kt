@@ -1,7 +1,9 @@
 package com.plug.hll
 
+import android.app.Activity
 import android.content.ComponentName
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
@@ -34,7 +36,15 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "请先打开无障碍服务", Toast.LENGTH_LONG).show()
                 }
             }
-            btn_add -> TrackerWindowManager.getInstance(this).addView()
+            btn_add -> {
+                if (!Settings.canDrawOverlays(this)) {
+                    val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                            Uri.parse("package:$packageName"))
+                    startActivityForResult(intent, 10)
+                } else {
+                    TrackerWindowManager.getInstance(this).addView()
+                }
+            }
         }
     }
 
@@ -43,5 +53,11 @@ class MainActivity : AppCompatActivity() {
         btn_aces.text = if (AccessibilityHelper.isAccessibilitySettingsOn(this, AcesService::class.java)) "关闭无障碍服务" else "开启无障碍服务"
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 10 && resultCode == Activity.RESULT_OK) {
+            TrackerWindowManager.getInstance(this).addView()
+        }
+    }
 
 }

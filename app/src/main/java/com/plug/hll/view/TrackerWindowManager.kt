@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
+import android.os.Build
 import android.provider.Settings
 import android.view.Gravity
 import android.view.View
@@ -49,7 +50,11 @@ class TrackerWindowManager(context: Context) {
             width = WindowManager.LayoutParams.WRAP_CONTENT
             height = WindowManager.LayoutParams.WRAP_CONTENT
             gravity = Gravity.RIGHT.or(Gravity.TOP)
-            type = WindowManager.LayoutParams.TYPE_PHONE
+            if (Build.VERSION.SDK_INT >= 26) {
+                type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+            } else {
+                type = WindowManager.LayoutParams.TYPE_PHONE
+            }
             format = PixelFormat.RGBA_8888
             flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL.or(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
         }
